@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Event Manager</title>
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .card {
+      margin-top: 1rem;
+    }
+    .form-section {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-5">
+    <h1 class="text-center mb-4">Event Manager</h1>
+
+    <!-- Form Section -->
+    <div class="form-section">
+      <form id="eventForm" method="post" action="/save_event">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="eventName" class="form-label">Event Name</label>
+            <input type="text" class="form-control" id="eventName" name="event_name" />
+          </div>
+          <div class="col-md-6">
+            <label for="eventLocation" class="form-label">Location</label>
+            <input type="text" class="form-control" id="eventLocation" name="event_location"/>
+          </div>
+          <div class="col-md-12">
+            <label for="eventDescription" class="form-label">Description</label>
+            <textarea class="form-control" id="eventDescription" rows="2" name="event_description"></textarea>
+          </div>
+          <div class="col-md-6">
+            <label for="eventDate" class="form-label">Date</label>
+            <input type="date" class="form-control" id="eventDate" name="event_date" />
+          </div>
+          <div class="col-md-6">
+            <label for="eventTime" class="form-label">Time</label>
+            <input type="time" class="form-control" id="eventTime" name="event_time"/>
+          </div>
+          <div class="col-12 text-end">
+            <button type="submit" class="btn btn-primary">Add Event</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Events List -->
+    <div id="eventsList" class="mt-4"></div>
+  </div>
+
+  <!-- Bootstrap JS + Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JavaScript -->
+  <script>
+    const form = document.getElementById('eventForm');
+    const eventsList = document.getElementById('eventsList');
+    let events = [];
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('eventName').value.trim();
+      const description = document.getElementById('eventDescription').value.trim();
+      const date = document.getElementById('eventDate').value;
+      const time = document.getElementById('eventTime').value;
+      const location = document.getElementById('eventLocation').value.trim();
+
+      if (!name || !description || !date || !time || !location) {
+        alert('Please Check Field Submit All Field');
+        return;
+      }
+
+      const newEvent = { name, description, date, time, location };
+      events.push(newEvent);
+      renderEvents();
+      form.reset();
+    });
+
+    function renderEvents() {
+      eventsList.innerHTML = '';
+      events.forEach((event, index) => {
+        eventsList.innerHTML += `
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">${event.name}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">${event.date} at ${event.time}</h6>
+              <p class="card-text">${event.description}</p>
+              <p class="card-text"><strong>Location:</strong> ${event.location}</p>
+              <button class="btn btn-warning btn-sm me-2" onclick="editEvent(${index})">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteEvent(${index})">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function deleteEvent(index) {
+      if (confirm('YOU ARE SURE YOU DELETE THIS PAGE')) {
+        events.splice(index, 1);
+        renderEvents();
+      }
+    }
+
+    function editEvent(index) {
+      const event = events[index];
+      document.getElementById('eventName').value = event.name;
+      document.getElementById('eventDescription').value = event.description;
+      document.getElementById('eventDate').value = event.date;
+      document.getElementById('eventTime').value = event.time;
+      document.getElementById('eventLocation').value = event.location;
+
+      events.splice(index, 1); // Remove old one for update
+    }
+  </script>
+</body>
+</html>
